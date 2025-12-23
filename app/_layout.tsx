@@ -56,7 +56,7 @@ function RootLayoutNav() {
     } else if (token && inAuth) {
       router.replace("/(app)/home")
     }
-  }, [token, segments])
+  }, [token, segments, router])
 
   return (
     <ThemeProvider value={DefaultTheme}>

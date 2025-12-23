@@ -1,11 +1,11 @@
-import * as AppleAuthentication from 'expo-apple-authentication';
-import { useRouter } from 'expo-router';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useAuthStore } from '../../store/useAuthStore';
+import * as AppleAuthentication from "expo-apple-authentication"
+import { useRouter } from "expo-router"
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native"
+import { useAuthStore } from "../../store/useAuthStore"
 
 export default function Signup() {
-  const router = useRouter();
-  const signIn = useAuthStore((state) => state.signIn);
+  const router = useRouter()
+  const signIn = useAuthStore((state) => state.signIn)
 
   const handleAppleSignUp = async () => {
     try {
@@ -14,7 +14,7 @@ export default function Signup() {
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
-      });
+      })
 
       signIn(
         {
@@ -23,23 +23,22 @@ export default function Signup() {
           firstName: credential.fullName?.givenName ?? null,
           lastName: credential.fullName?.familyName ?? null,
         },
-        credential.identityToken || ''
-      );
+        credential.identityToken || ""
+      )
 
-      router.replace('/(app)/home');
+      router.replace("/(app)/home")
     } catch (e: any) {
-      if (e.code === 'ERR_REQUEST_CANCELED') {
+      if (e.code === "ERR_REQUEST_CANCELED") {
         // User canceled
       } else {
-        Alert.alert('Error', 'Apple Sign-Up failed');
-        console.error(e);
+        Alert.alert("Error", "Apple Sign-Up failed")
+        console.error(e)
       }
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
-
       <View style={styles.content}>
         <AppleAuthentication.AppleAuthenticationButton
           buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
@@ -52,45 +51,45 @@ export default function Signup() {
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Already have an account?</Text>
-        <Pressable onPress={() => router.replace('/(auth)/login')}>
+        <Pressable onPress={() => router.replace("/(auth)/login")}>
           <Text style={styles.footerLink}>Sign In</Text>
         </Pressable>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 24,
     paddingTop: 80,
     paddingBottom: 40,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   appleButton: {
-    width: '100%',
+    width: "100%",
     maxWidth: 340,
     height: 50,
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
   },
   footerText: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
   },
   footerLink: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000',
-    textDecorationLine: 'underline',
+    fontWeight: "600",
+    color: "#000",
+    textDecorationLine: "underline",
   },
-});
+})
