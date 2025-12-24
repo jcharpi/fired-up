@@ -50,7 +50,7 @@ export default function Auth() {
 				)
 			} else {
 				Alert.alert(
-					"Authentication Failed", 
+					"Authentication Failed",
 					"Please try again. If the problem persists, try restarting the app."
 				)
 				console.error("Apple Auth Error:", e)
