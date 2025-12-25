@@ -1,3 +1,8 @@
+/**
+ * Root navigation layout with authentication routing.
+ * Handles splash screen, font loading, and auth-based navigation guards.
+ */
+
 import { useAuthStore } from "@/store/useAuthStore"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native"
@@ -7,17 +12,12 @@ import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 import "react-native-reanimated"
 
-export {
-	// Catch any errors thrown by the Layout component.
-	ErrorBoundary,
-} from "expo-router"
+export { ErrorBoundary } from "expo-router"
 
 export const unstable_settings = {
-	// Ensure that reloading on `/modal` keeps a back button present.
-	initialRouteName: "(auth)",
+	initialRouteName: "landing",
 }
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
@@ -25,7 +25,6 @@ export default function RootLayout() {
 		...FontAwesome.font,
 	})
 
-	// Expo Router uses Error Boundaries to catch errors in the navigation tree.
 	useEffect(() => {
 		if (error) throw error
 	}, [error])
@@ -43,51 +42,37 @@ export default function RootLayout() {
 	return <RootLayoutNav />
 }
 
+/**
+ * Navigation stack with auth-based routing.
+ * Redirects unauthenticated users to landing, authenticated users to home.
+ */
 function RootLayoutNav() {
 	const token = useAuthStore((s) => s.token)
-	const isGettingStarted = useAuthStore((s) => s.isGettingStarted)
 	const segments = useSegments()
 	const router = useRouter()
 
 	useEffect(() => {
-		const inAuth = segments[0] === "(auth)"
+		const isOnLanding = segments[0] === "landing"
 
-		if (!token && !inAuth) {
-			if (isGettingStarted) {
-				router.replace("/(auth)/landing")
-			} else {
-				router.replace({ pathname: "/(auth)/auth", params: { mode: "login" } })
-			}
-		} else if (token && inAuth) {
-			router.replace("/(app)/home")
+		if (!token && !isOnLanding) {
+			router.replace("/landing")
+		} else if (token && isOnLanding) {
+			router.replace("/home")
 		}
-	}, [token, isGettingStarted, segments, router])
+	}, [token, segments, router])
 
 	return (
 		<ThemeProvider value={DefaultTheme}>
-			<Stack screenOptions={{ gestureEnabled: false }}>
-				<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+			<Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+				<Stack.Screen name="landing" />
+				<Stack.Screen name="home" />
 				<Stack.Screen
-					name="(app)"
-					options={{
-						headerShown: false,
-					}}
+					name="modals/donateModal"
+					options={{ presentation: "transparentModal", animation: "fade" }}
 				/>
 				<Stack.Screen
-					name="modals/causeModal"
-					options={{
-						presentation: "fullScreenModal",
-						headerShown: true,
-						title: "Details",
-					}}
-				/>
-				<Stack.Screen
-					name="modals/donationHistoryModal"
-					options={{
-						presentation: "fullScreenModal",
-						headerShown: true,
-						title: "Donation History",
-					}}
+					name="modals/nodeModal"
+					options={{ presentation: "modal" }}
 				/>
 			</Stack>
 		</ThemeProvider>

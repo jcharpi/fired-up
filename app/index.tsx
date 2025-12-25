@@ -1,3 +1,7 @@
+/**
+ * App entry point - redirects to landing screen.
+ */
+
 import { Redirect } from "expo-router"
 
 export default function Index() {

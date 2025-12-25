@@ -1,7 +1,13 @@
+/**
+ * Authentication state management using Zustand with secure storage persistence.
+ * @module store/useAuthStore
+ */
+
 import * as SecureStore from "expo-secure-store"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
+/** Authenticated user profile */
 export interface User {
 	id: string
 	email: string | null
@@ -13,12 +19,16 @@ interface AuthState {
 	user: User | null
 	token: string | null
 	isGettingStarted: boolean
+	/** Sign in with user profile and auth token */
 	signIn: (user: User, token: string) => void
+	/** Clear authentication state */
 	signOut: () => void
+	/** Reset to initial onboarding state */
 	reset: () => void
 	init: boolean
 }
 
+/** Secure storage adapter for sensitive auth data */
 const secureStorage = {
 	getItem: async (name: string) => {
 		return await SecureStore.getItemAsync(name)
@@ -31,6 +41,10 @@ const secureStorage = {
 	},
 }
 
+/**
+ * Global authentication store.
+ * Persists user credentials securely using expo-secure-store.
+ */
 export const useAuthStore = create<AuthState>()(
 	persist(
 		(set) => ({

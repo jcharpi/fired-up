@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/react-native"
 import React from "react"
 
+import * as AppleAuthentication from "expo-apple-authentication"
+
 // Mock expo-router hooks used by the Auth screen
 const mockReplace = jest.fn()
 jest.mock("expo-router", () => {
@@ -25,7 +27,9 @@ jest.mock("expo-apple-authentication", () => {
 	const { Text } = require("react-native")
 	return {
 		isAvailableAsync: () => mockIsAvailableAsync(),
-		signInAsync: (opts: any) => mockSignInAsync(opts),
+		signInAsync: (
+			opts: AppleAuthentication.AppleAuthenticationSignInOptions
+		) => mockSignInAsync(opts),
 		AppleAuthenticationScope: {
 			FULL_NAME: "FULL_NAME",
 			EMAIL: "EMAIL",
@@ -37,7 +41,9 @@ jest.mock("expo-apple-authentication", () => {
 		AppleAuthenticationButtonStyle: {
 			BLACK: "BLACK",
 		},
-		AppleAuthenticationButton: ({ onPress }: any) => {
+		AppleAuthenticationButton: ({
+			onPress,
+		}: AppleAuthentication.AppleAuthenticationButtonProps) => {
 			return React.createElement(
 				Text,
 				{ onPress, testID: "appleButton" },
@@ -50,9 +56,14 @@ jest.mock("expo-apple-authentication", () => {
 // Mock Auth store
 const mockSignInStore = jest.fn()
 
+interface AuthStore {
+	signIn: typeof mockSignInStore
+}
+
 jest.mock("../store/useAuthStore", () => {
 	return {
-		useAuthStore: (selector: any) => selector({ signIn: mockSignInStore }),
+		useAuthStore: (selector: (state: AuthStore) => unknown) =>
+			selector({ signIn: mockSignInStore }),
 	}
 })
 
