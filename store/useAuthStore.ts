@@ -18,14 +18,10 @@ export interface User {
 interface AuthState {
 	user: User | null
 	token: string | null
-	isGettingStarted: boolean
 	/** Sign in with user profile and auth token */
 	signIn: (user: User, token: string) => void
 	/** Clear authentication state */
 	signOut: () => void
-	/** Reset to initial onboarding state */
-	reset: () => void
-	init: boolean
 }
 
 /** Secure storage adapter for sensitive auth data */
@@ -50,11 +46,8 @@ export const useAuthStore = create<AuthState>()(
 		(set) => ({
 			user: null,
 			token: null,
-			isGettingStarted: true,
-			signIn: (user, token) => set({ user, token, isGettingStarted: false }),
+			signIn: (user, token) => set({ user, token }),
 			signOut: () => set({ user: null, token: null }),
-			reset: () => set({ user: null, token: null, isGettingStarted: true }),
-			init: true,
 		}),
 		{
 			name: "auth-storage",

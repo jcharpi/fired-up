@@ -6,41 +6,155 @@
 
 import type { Cause, TreeNode } from "@/store/useTreeStore"
 
+// =============================================================================
+// CAUSES
+// =============================================================================
+
 /** Available charitable causes */
 export const causes: Cause[] = [
 	{
-		id: "environmental",
-		name: "Environmental Protection",
-		description: "Support conservation, reforestation, and climate action",
+		id: "people-community",
+		name: "People & Community",
+		description: "Support youth, seniors, and diverse communities",
+		icon: "users",
+	},
+	{
+		id: "housing-poverty",
+		name: "Housing & Poverty",
+		description: "Fight homelessness and food insecurity",
+		icon: "home",
+	},
+	{
+		id: "animals-wildlife",
+		name: "Animals & Wildlife",
+		description: "Protect animals and preserve wildlife",
+		icon: "heart",
+	},
+	{
+		id: "environment",
+		name: "Environment",
+		description: "Combat climate change and protect nature",
 		icon: "globe",
+	},
+	{
+		id: "health-medicine",
+		name: "Health & Medicine",
+		description: "Support medical research and mental health",
+		icon: "activity",
+	},
+	{
+		id: "arts-culture",
+		name: "Arts & Culture",
+		description: "Fund creativity and cultural preservation",
+		icon: "music",
 	},
 	{
 		id: "education",
 		name: "Education",
-		description: "Fund learning opportunities worldwide",
+		description: "Expand access to learning and knowledge",
 		icon: "book-open",
 	},
 	{
-		id: "mental-health",
-		name: "Mental Health",
-		description: "Support mental wellness initiatives",
-		icon: "heart",
-	},
-	{
-		id: "animal-welfare",
-		name: "Animal Welfare",
-		description: "Protect and care for animals",
-		icon: "github",
+		id: "humanitarian",
+		name: "Humanitarian Relief",
+		description: "Provide crisis and disaster relief",
+		icon: "shield",
 	},
 ]
 
-/** Environmental Protection skill tree */
-export const environmentalTree: TreeNode[] = [
-	// Tier 0: Root
+// =============================================================================
+// HELPER: Generate standard donation nodes for a subcategory
+// =============================================================================
+
+/**
+ * Generates a standard set of donation nodes for a subcategory.
+ * Creates one-time ($15, $50, $100) and monthly (3, 6, 12 months) options.
+ */
+function createSubcategoryNodes(
+	subcategoryId: string,
+	subcategoryTitle: string,
+	description: string,
+	parentId: string
+): TreeNode[] {
+	return [
+		// One-time donations
+		{
+			id: `${subcategoryId}-15`,
+			title: `${subcategoryTitle} - $15`,
+			description: `Make a $15 one-time donation to support ${description}.`,
+			goalType: "total_donation",
+			targetAmountUSD: 15,
+			parentIds: [parentId],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+		{
+			id: `${subcategoryId}-50`,
+			title: `${subcategoryTitle} - $50`,
+			description: `Make a $50 one-time donation to support ${description}.`,
+			goalType: "total_donation",
+			targetAmountUSD: 50,
+			parentIds: [`${subcategoryId}-15`],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+		{
+			id: `${subcategoryId}-100`,
+			title: `${subcategoryTitle} - $100`,
+			description: `Make a $100 one-time donation to support ${description}.`,
+			goalType: "total_donation",
+			targetAmountUSD: 100,
+			parentIds: [`${subcategoryId}-50`],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+		// Monthly commitments
+		{
+			id: `${subcategoryId}-monthly-3`,
+			title: `${subcategoryTitle} - 3 Month Supporter`,
+			description: `Commit to 3 months of $10/month donations for ${description}.`,
+			goalType: "monthly_commitment",
+			requiredMonths: 3,
+			minimumMonthlyAmountUSD: 10,
+			parentIds: [parentId],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+		{
+			id: `${subcategoryId}-monthly-6`,
+			title: `${subcategoryTitle} - 6 Month Supporter`,
+			description: `Commit to 6 months of $10/month donations for ${description}.`,
+			goalType: "monthly_commitment",
+			requiredMonths: 6,
+			minimumMonthlyAmountUSD: 10,
+			parentIds: [`${subcategoryId}-monthly-3`],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+		{
+			id: `${subcategoryId}-monthly-12`,
+			title: `${subcategoryTitle} - 12 Month Champion`,
+			description: `Commit to a full year of $10/month donations for ${description}.`,
+			goalType: "monthly_commitment",
+			requiredMonths: 12,
+			minimumMonthlyAmountUSD: 10,
+			parentIds: [`${subcategoryId}-monthly-6`],
+			nonprofitIds: [],
+			defaultNonprofitId: "",
+		},
+	]
+}
+
+// =============================================================================
+// PEOPLE, IDENTITY & COMMUNITY
+// =============================================================================
+
+export const peopleCommunityTree: TreeNode[] = [
+	// Root
 	{
 		id: "root",
-		title: "Protect the Planet",
-		description: "Your journey to environmental stewardship begins here.",
+		title: "People & Community",
+		description: "Support diverse communities and champion equality.",
 		goalType: "total_donation",
 		targetAmountUSD: 0,
 		parentIds: [],
@@ -48,131 +162,287 @@ export const environmentalTree: TreeNode[] = [
 		defaultNonprofitId: "",
 	},
 
-	// Tier 1: Entry Actions
+	// Branch roots
 	{
-		id: "plant-trees",
-		title: "Plant Native Trees",
-		description: "Fund native tree planting initiatives in your region.",
+		id: "youth-root",
+		title: "Youth Programs",
+		description: "Empower the next generation.",
 		goalType: "total_donation",
-		targetAmountUSD: 300,
+		targetAmountUSD: 0,
 		parentIds: ["root"],
-		nonprofitIds: ["one-tree-planted", "arbor-day"],
-		defaultNonprofitId: "one-tree-planted",
+		nonprofitIds: [],
+		defaultNonprofitId: "",
 	},
 	{
-		id: "reduce-plastic",
-		title: "Reduce Plastic Waste",
-		description: "Support organizations fighting plastic pollution.",
+		id: "seniors-root",
+		title: "Senior Support",
+		description: "Care for our elders.",
 		goalType: "total_donation",
-		targetAmountUSD: 200,
+		targetAmountUSD: 0,
 		parentIds: ["root"],
-		nonprofitIds: ["ocean-conservancy", "plastic-pollution"],
-		defaultNonprofitId: "ocean-conservancy",
+		nonprofitIds: [],
+		defaultNonprofitId: "",
 	},
 	{
-		id: "wildlife-rescue",
-		title: "Support Wildlife Rescue",
-		description: "Help rescue and rehabilitate wildlife in need.",
+		id: "lgbt-root",
+		title: "LGBTQ+ Rights",
+		description: "Support LGBTQ+ equality and acceptance.",
 		goalType: "total_donation",
-		targetAmountUSD: 250,
+		targetAmountUSD: 0,
 		parentIds: ["root"],
-		nonprofitIds: ["wildlife-rescue", "wwf"],
-		defaultNonprofitId: "wildlife-rescue",
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	{
+		id: "transgender-root",
+		title: "Transgender Support",
+		description: "Support transgender individuals and advocacy.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: ["root"],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	{
+		id: "gender-equality-root",
+		title: "Gender Equality",
+		description: "Champion gender equality worldwide.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: ["root"],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	{
+		id: "religion-root",
+		title: "Religious Communities",
+		description: "Support faith-based initiatives.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: ["root"],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	{
+		id: "justice-root",
+		title: "Justice & Rights",
+		description: "Fight for justice and civil rights.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: ["root"],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	{
+		id: "immigration-root",
+		title: "Immigrants & Refugees",
+		description: "Support immigrants and refugees.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: ["root"],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
 	},
 
-	// Tier 2: Projects & Commitments
-	{
-		id: "urban-reforestation",
-		title: "Urban Reforestation Project",
-		description: "Fund large-scale tree planting in urban areas.",
-		goalType: "total_donation",
-		targetAmountUSD: 600,
-		parentIds: ["plant-trees"],
-		nonprofitIds: ["one-tree-planted", "arbor-day"],
-		defaultNonprofitId: "one-tree-planted",
-	},
-	{
-		id: "monthly-reforestation-3",
-		title: "Monthly Reforestation Support",
-		description: "Commit to 3 months of ongoing reforestation support.",
-		goalType: "monthly_commitment",
-		requiredMonths: 3,
-		minimumMonthlyAmountUSD: 10,
-		parentIds: ["plant-trees"],
-		nonprofitIds: ["one-tree-planted"],
-		defaultNonprofitId: "one-tree-planted",
-	},
-	{
-		id: "community-cleanup",
-		title: "Community Cleanup Funding",
-		description: "Support community-led cleanup initiatives.",
-		goalType: "total_donation",
-		targetAmountUSD: 400,
-		parentIds: ["reduce-plastic"],
-		nonprofitIds: ["ocean-conservancy"],
-		defaultNonprofitId: "ocean-conservancy",
-	},
-	{
-		id: "monthly-waste-6",
-		title: "Monthly Waste Reduction Support",
-		description: "Commit to 6 months of waste reduction advocacy.",
-		goalType: "monthly_commitment",
-		requiredMonths: 6,
-		minimumMonthlyAmountUSD: 10,
-		parentIds: ["reduce-plastic"],
-		nonprofitIds: ["plastic-pollution"],
-		defaultNonprofitId: "plastic-pollution",
-	},
+	// Youth subcategory nodes
+	...createSubcategoryNodes("youth", "Youth", "youth programs and education", "youth-root"),
 
-	// Tier 3: Long-Term Impact
-	{
-		id: "monthly-reforestation-6",
-		title: "Reforestation Commitment (6 months)",
-		description: "Deepen your commitment with 6 months of support.",
-		goalType: "monthly_commitment",
-		requiredMonths: 6,
-		minimumMonthlyAmountUSD: 15,
-		parentIds: ["monthly-reforestation-3"],
-		nonprofitIds: ["one-tree-planted"],
-		defaultNonprofitId: "one-tree-planted",
-	},
-	{
-		id: "monthly-reforestation-12",
-		title: "Reforestation Commitment (12 months)",
-		description: "A full year of sustained reforestation support.",
-		goalType: "monthly_commitment",
-		requiredMonths: 12,
-		minimumMonthlyAmountUSD: 20,
-		parentIds: ["monthly-reforestation-3"],
-		nonprofitIds: ["one-tree-planted"],
-		defaultNonprofitId: "one-tree-planted",
-	},
-	{
-		id: "habitat-restoration",
-		title: "Regional Habitat Restoration",
-		description: "Major funding for regional ecosystem restoration.",
-		goalType: "total_donation",
-		targetAmountUSD: 1500,
-		parentIds: ["urban-reforestation"],
-		nonprofitIds: ["one-tree-planted", "wwf"],
-		defaultNonprofitId: "wwf",
-	},
+	// Seniors subcategory nodes
+	...createSubcategoryNodes("seniors", "Seniors", "senior care and services", "seniors-root"),
 
-	// Tier 4: Capstone
-	{
-		id: "capstone",
-		title: "Sustained Environmental Stewardship",
-		description:
-			"You've made a lasting impact. $3,000 lifetime or 12-month commitment.",
-		goalType: "total_donation",
-		targetAmountUSD: 3000,
-		parentIds: ["habitat-restoration", "monthly-reforestation-12"],
-		nonprofitIds: ["one-tree-planted", "wwf", "ocean-conservancy"],
-		defaultNonprofitId: "wwf",
-	},
+	// LGBT subcategory nodes
+	...createSubcategoryNodes("lgbt", "LGBTQ+", "LGBTQ+ rights and services", "lgbt-root"),
+
+	// Transgender subcategory nodes
+	...createSubcategoryNodes("transgender", "Transgender", "transgender support services", "transgender-root"),
+
+	// Gender Equality subcategory nodes
+	...createSubcategoryNodes("gender-equality", "Gender Equality", "gender equality initiatives", "gender-equality-root"),
+
+	// Religion subcategories
+	...createSubcategoryNodes("buddhism", "Buddhism", "Buddhist communities", "religion-root"),
+	...createSubcategoryNodes("christianity", "Christianity", "Christian communities", "religion-root"),
+	...createSubcategoryNodes("hinduism", "Hinduism", "Hindu communities", "religion-root"),
+	...createSubcategoryNodes("islam", "Islam", "Islamic communities", "religion-root"),
+	...createSubcategoryNodes("judaism", "Judaism", "Jewish communities", "religion-root"),
+	...createSubcategoryNodes("religion-general", "Interfaith", "interfaith initiatives", "religion-root"),
+
+	// Justice subcategories
+	...createSubcategoryNodes("racial-justice", "Racial Justice", "racial justice and equity", "justice-root"),
+	...createSubcategoryNodes("justice-general", "Justice Reform", "justice system reform", "justice-root"),
+	...createSubcategoryNodes("legal-aid", "Legal Aid", "legal aid services", "justice-root"),
+	...createSubcategoryNodes("voting-rights", "Voting Rights", "voting rights protection", "justice-root"),
+
+	// Immigration subcategories
+	...createSubcategoryNodes("immigrants", "Immigrants", "immigrant support services", "immigration-root"),
+	...createSubcategoryNodes("refugees", "Refugees", "refugee assistance", "immigration-root"),
 ]
+
+// =============================================================================
+// HOUSING, POVERTY & BASIC NEEDS
+// =============================================================================
+
+export const housingPovertyTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Housing & Basic Needs",
+		description: "Fight poverty and ensure everyone has a home.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("adoption", "Adoption Services", "adoption and foster care", "root"),
+	...createSubcategoryNodes("housing", "Housing", "housing and shelter programs", "root"),
+	...createSubcategoryNodes("poverty", "Poverty Relief", "poverty alleviation", "root"),
+	...createSubcategoryNodes("food-security", "Food Security", "food banks and nutrition programs", "root"),
+]
+
+// =============================================================================
+// ANIMALS & WILDLIFE
+// =============================================================================
+
+export const animalsWildlifeTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Animals & Wildlife",
+		description: "Protect and care for animals everywhere.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("animals-general", "Animal Welfare", "general animal welfare", "root"),
+	...createSubcategoryNodes("cats", "Cat Rescue", "cat rescue and adoption", "root"),
+	...createSubcategoryNodes("dogs", "Dog Rescue", "dog rescue and adoption", "root"),
+	...createSubcategoryNodes("wildlife", "Wildlife Conservation", "wildlife protection", "root"),
+]
+
+// =============================================================================
+// ENVIRONMENT & CONSERVATION
+// =============================================================================
+
+export const environmentTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Environment & Conservation",
+		description: "Protect our planet for future generations.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("climate", "Climate Action", "climate change initiatives", "root"),
+	...createSubcategoryNodes("conservation", "Conservation", "land and habitat conservation", "root"),
+	...createSubcategoryNodes("oceans", "Ocean Protection", "ocean conservation", "root"),
+	...createSubcategoryNodes("parks", "Parks & Recreation", "parks preservation", "root"),
+	...createSubcategoryNodes("water", "Clean Water", "clean water access", "root"),
+	...createSubcategoryNodes("wildfires", "Wildfire Relief", "wildfire prevention and recovery", "root"),
+]
+
+// =============================================================================
+// HEALTH & MEDICINE
+// =============================================================================
+
+export const healthMedicineTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Health & Medicine",
+		description: "Support medical research and healthcare access.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("autism", "Autism Support", "autism research and support", "root"),
+	...createSubcategoryNodes("cancer", "Cancer Research", "cancer research and patient support", "root"),
+	...createSubcategoryNodes("disease", "Disease Research", "disease research and prevention", "root"),
+	...createSubcategoryNodes("health-general", "General Health", "healthcare access", "root"),
+	...createSubcategoryNodes("mental-health", "Mental Health", "mental health services", "root"),
+	...createSubcategoryNodes("womens-health", "Women's Health", "women's health initiatives", "root"),
+]
+
+// =============================================================================
+// ARTS & CULTURE
+// =============================================================================
+
+export const artsCultureTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Arts & Culture",
+		description: "Celebrate creativity and preserve culture.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("art", "Visual Arts", "visual arts programs", "root"),
+	...createSubcategoryNodes("dance", "Dance", "dance education and performance", "root"),
+	...createSubcategoryNodes("film-tv", "Film & TV", "film and television arts", "root"),
+	...createSubcategoryNodes("music", "Music", "music education and performance", "root"),
+	...createSubcategoryNodes("museums", "Museums", "museum preservation and access", "root"),
+	...createSubcategoryNodes("theater", "Theater", "theater arts", "root"),
+	...createSubcategoryNodes("radio", "Public Radio", "public radio and media", "root"),
+]
+
+// =============================================================================
+// EDUCATION & KNOWLEDGE
+// =============================================================================
+
+export const educationTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Education & Knowledge",
+		description: "Expand access to learning for all.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("education-general", "Education", "educational programs", "root"),
+	...createSubcategoryNodes("libraries", "Libraries", "library access and literacy", "root"),
+	...createSubcategoryNodes("research", "Research", "academic research", "root"),
+	...createSubcategoryNodes("science", "Science", "science education and outreach", "root"),
+]
+
+// =============================================================================
+// HUMANITARIAN & CRISIS RELIEF
+// =============================================================================
+
+export const humanitarianTree: TreeNode[] = [
+	{
+		id: "root",
+		title: "Humanitarian Relief",
+		description: "Provide aid in times of crisis.",
+		goalType: "total_donation",
+		targetAmountUSD: 0,
+		parentIds: [],
+		nonprofitIds: [],
+		defaultNonprofitId: "",
+	},
+	...createSubcategoryNodes("afghanistan", "Afghanistan Relief", "Afghanistan humanitarian aid", "root"),
+	...createSubcategoryNodes("disaster-relief", "Disaster Relief", "disaster response and recovery", "root"),
+	...createSubcategoryNodes("humanitarian-general", "Global Humanitarian", "global humanitarian efforts", "root"),
+]
+
+// =============================================================================
+// TREE DATA MAP
+// =============================================================================
 
 /** Map of cause ID to its skill tree */
 export const treesData: Record<string, TreeNode[]> = {
-	environmental: environmentalTree,
+	"people-community": peopleCommunityTree,
+	"housing-poverty": housingPovertyTree,
+	"animals-wildlife": animalsWildlifeTree,
+	environment: environmentTree,
+	"health-medicine": healthMedicineTree,
+	"arts-culture": artsCultureTree,
+	education: educationTree,
+	humanitarian: humanitarianTree,
 }
